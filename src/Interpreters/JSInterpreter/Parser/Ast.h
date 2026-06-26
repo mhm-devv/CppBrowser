@@ -6,10 +6,11 @@
 namespace Ast {
     enum class StatementType {
         VarDecl, VarReInit, If, ElseIf, Switch, Case, Default,
-        Break, Continue, Return, While, For, FuncDecl, ClassDecl, Expr, Program, Scope
+        Break, Continue, Return, While, For, FuncDecl, ClassDecl, Expr, Program, Scope,
+        IndexReInit, MemberReInit
     };
     enum class ExpressionType {
-        Number, String, Boolean, Func, Object, Array, FuncCall
+        Number, String, Boolean, Func, Object, Array, FuncCall, IndexAccess, MemberAccess
     };
 
     class Statement {
@@ -137,4 +138,34 @@ namespace Ast {
         FuncCall(std::string_view name_, std::vector<std::unique_ptr<Expression>> args_):
             Expression(ExpressionType::FuncCall), name(name_), args(std::move(args_)) {}
     };
+    class IndexAccess : public Expression {
+    public:
+        const std::unique_ptr<Expression> target_expr;
+        const std::unique_ptr<Expression> index_expr;
+        IndexAccess(std::unique_ptr<Expression> t_expr, std::unique_ptr<Expression> i_expr):
+            Expression(ExpressionType::IndexAccess), target_expr(std::move(t_expr)), index_expr(std::move(i_expr)) {}
+    };
+    class MemberAccess : public Expression {
+    public:
+        const std::unique_ptr<Expression> target_expr;
+        const std::string_view member_name;
+        MemberAccess(std::unique_ptr<Expression> t_expr, std::string_view m_name):
+            Expression(ExpressionType::MemberAccess), target_expr(std::move(t_expr)), member_name(m_name) {}
+    };
+
+    class IndexReInit : public Statement {
+    public:
+        const std::unique_ptr<IndexAccess> target_expr;
+        const std::unique_ptr<Expression> reinit_value;
+        IndexReInit(std::unique_ptr<IndexAccess> t_expr, std::unique_ptr<Expression> value):
+            Statement(StatementType::IndexReInit), target_expr(std::move(t_expr)), reinit_value(std::move(value)) {}
+    };
+    class MemberReInit : public Statement {
+    public:
+        const std::unique_ptr<MemberAccess> target_expr;
+        const std::unique_ptr<Expression> reinit_value;
+        MemberReInit(std::unique_ptr<MemberAccess> t_expr, std::unique_ptr<Expression> value):
+            Statement(StatementType::IndexReInit), target_expr(std::move(t_expr)), reinit_value(std::move(value)) {}
+    };
+
 }

@@ -16,7 +16,9 @@ namespace Lexing {
 
         // Words
         Const, Var, Let, If, Else, Switch, Case, Default, Return, Continue, Break,
-        Class, Identifier, Number, True, False, While, For, Function
+        Class, Identifier, Number, True, False, While, For, Function,
+
+        EndOfFile
     };
 
     struct Token {

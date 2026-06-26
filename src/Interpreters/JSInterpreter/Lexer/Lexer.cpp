@@ -146,6 +146,8 @@ std::vector<Token> Lexer::tokenize(const char* code, size_t len) {
     current_index = 0;
     current_char = '\0';
 
+    tokens.push_back(Token{TokenType::EndOfFile, "\0"});
+
     return tokens;
 }
 
