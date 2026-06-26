@@ -10,13 +10,14 @@ namespace Ast {
         IndexReInit, MemberReInit
     };
     enum class ExpressionType {
-        Number, String, Boolean, Func, Object, Array, FuncCall, IndexAccess, MemberAccess
+        Number, String, Boolean, Func, Object, Array, FuncCall, IndexAccess, MemberAccess, Binary, Identifier
     };
 
     class Statement {
     public:
         const StatementType type;
         Statement(const StatementType stmt_type): type(stmt_type) {}
+        virtual ~Statement() = default;
     };
     class Expression : public Statement {
     public:
@@ -110,6 +111,11 @@ namespace Ast {
         const float number;
         Number(float num): Expression(ExpressionType::Number), number(num) {}
     };
+    class Identifier : public Expression {
+    public:
+        const std::string_view identifier;
+        Identifier(std::string_view iden): Expression(ExpressionType::Identifier), identifier(iden) {}
+    };
     class String : public Expression {
     public:
         const std::string_view string;
@@ -133,10 +139,10 @@ namespace Ast {
     };
     class FuncCall : public Expression {
     public:
-        const std::string_view name;
+        const std::unique_ptr<Expression> expr;
         const std::vector<std::unique_ptr<Expression>> args;
-        FuncCall(std::string_view name_, std::vector<std::unique_ptr<Expression>> args_):
-            Expression(ExpressionType::FuncCall), name(name_), args(std::move(args_)) {}
+        FuncCall(std::unique_ptr<Expression> expr_, std::vector<std::unique_ptr<Expression>> args_):
+            Expression(ExpressionType::FuncCall), expr(std::move(expr_)), args(std::move(args_)) {}
     };
     class IndexAccess : public Expression {
     public:
@@ -151,6 +157,15 @@ namespace Ast {
         const std::string_view member_name;
         MemberAccess(std::unique_ptr<Expression> t_expr, std::string_view m_name):
             Expression(ExpressionType::MemberAccess), target_expr(std::move(t_expr)), member_name(m_name) {}
+    };
+    class BinaryExpr : public Expression {
+    public:
+        const std::unique_ptr<Expression> left;
+        const std::string_view _operator;
+        const std::unique_ptr<Expression> right;
+        BinaryExpr(std::unique_ptr<Expression> _left, std::string_view operator_,
+            std::unique_ptr<Expression> _right): Expression(ExpressionType::Binary),
+        left(std::move(_left)), right(std::move(_right)), _operator(operator_) {}
     };
 
     class IndexReInit : public Statement {

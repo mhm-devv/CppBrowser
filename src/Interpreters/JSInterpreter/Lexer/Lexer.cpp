@@ -14,7 +14,7 @@ const std::unordered_map<std::string_view, TokenType> Lexer::known_words = {
     {"for"sv, TokenType::For}, {"function"sv, TokenType::Function}
 };
 
-static consteval std::array<TokenType, 128> Lexing::generate_single_char_known_words() {
+static consteval std::array<TokenType, 128> Lexing::generateSingleCharKnownWords() {
     std::array<TokenType, 128> array = {};
 
     for (size_t i = 0; i < 128; ++i) {
@@ -42,7 +42,7 @@ static consteval std::array<TokenType, 128> Lexing::generate_single_char_known_w
     return array;
 }
 
-static consteval std::array<bool, 128> Lexing::generate_skip_chars() {
+static consteval std::array<bool, 128> Lexing::generateSkipChars() {
     std::array<bool, 128> array = {};
 
     for (size_t i = 0; i < 128; i++) {
@@ -57,7 +57,7 @@ static consteval std::array<bool, 128> Lexing::generate_skip_chars() {
     return array;
 };
 
-const std::array<TokenType, 128> Lexer::single_char_known_symbols = generate_single_char_known_words();
+const std::array<TokenType, 128> Lexer::single_char_known_symbols = generateSingleCharKnownWords();
 const std::unordered_map<std::string_view, TokenType> Lexer::extended_char_known_symbols = {
     {"<="sv, TokenType::BinaryOperator}, {">="sv, TokenType::BinaryOperator},
     {"=="sv, TokenType::BinaryOperator},{"!="sv, TokenType::BinaryOperator},
@@ -67,7 +67,7 @@ const std::unordered_map<std::string_view, TokenType> Lexer::extended_char_known
     {"&&"sv, TokenType::BinaryOperator}
 };
 
-const std::array<bool, 128> Lexer::skip_chars = generate_skip_chars();
+const std::array<bool, 128> Lexer::skip_chars = generateSkipChars();
 
 std::vector<Token> Lexer::tokenize(const char* code, size_t len) {
     if (code[0] == '\0')
